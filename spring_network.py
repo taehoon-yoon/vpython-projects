@@ -2,8 +2,8 @@ import vpython as vp
 import numpy as np
 
 
-def get_idx(num, row, col):
-    return num * row + col
+def get_idx(num, depth, row, col):
+    return num * num * depth + num * row + col
 
 
 def vpVec2npVec(vec):
@@ -71,29 +71,31 @@ def collision(objects, pos, vel):
             # -2(v dot n)n + v
             normal_vec = vpVec2npVec(obj.up)
             normal_vec = normal_vec / np.linalg.norm(normal_vec)
-            vel[is_inside]=(-2*np.matmul(vel[is_inside],normal_vec))[:,None]*normal_vec[None,:] + vel[is_inside]
+            vel[is_inside] = (-2 * np.matmul(vel[is_inside], normal_vec))[:, None] * normal_vec[None, :] + vel[
+                is_inside]
     return pos, vel
 
 
 N = 5
 dt = 1 / 30
-spring_coef = 300
+spring_coef = 150
 gravitational_acceleration = 9.8
 node_mass = 0.1
 drag_coef = 0.3
 
 vp.scene = vp.canvas(title='spring network',
                      width=1700, height=750,
-                     center=vp.vector(2, 1, 0.1), background=vp.color.cyan)
-xlin = np.linspace(1, 3, N)
+                     center=vp.vector(2, 0, 0.1), background=vp.color.cyan)
+xlin = np.linspace(6, 8, N)
 ylin = np.linspace(2, 4, N)
-x, y = np.meshgrid(xlin, ylin)
+zlin = np.linspace(-1, 1, N)
+x, y, z = np.meshgrid(xlin, ylin, zlin)
 x = x.flatten()
 y = y.flatten()
-z = np.zeros_like(x)
+z = z.flatten()
 pos = np.vstack([x, y, z]).T
 acc = np.zeros_like(pos)
-velocity = 0.01 * np.concatenate([np.random.randn(x.shape[0], 2), np.zeros([x.shape[0], 1])], axis=1)
+velocity = 0.01 * np.random.randn(x.shape[0], 3)
 node_array = []
 for node in pos:
     node_ = vp.sphere(pos=vp.vector(*node), radius=0.1, color=vp.color.blue)
@@ -101,21 +103,21 @@ for node in pos:
     node_array.append(node_)
 
 object_array = []
-ground1 = vp.box(pos=vp.vec(2, -1, 0), size=vp.vec(3, 0.2, 6), color=vp.color.green)
+ground1 = vp.box(pos=vp.vec(4, -1, 0), size=vp.vec(3, 0.2, 6), color=vp.color.green)
 ground1.type = 'box'
-#ground1.up=vp.vec(-1,0.5,0)
+# ground1.up=vp.vec(-1,0.5,0)
 ground1.w2c, ground1.c2w = get_camera_extrinsic(ground1.axis, ground1.up, ground1.pos)  # 4X4
 ground1.min, ground1.max = get_box_min_max(ground1.size)
 object_array.append(ground1)
 
-clamp = vp.box(pos=vp.vec(2, -1, 0), size=vp.vec(10, 0.2, 6), color=vp.color.green)
+clamp = vp.box(pos=vp.vec(4, -1, 0), size=vp.vec(10, 0.2, 6), color=vp.color.green)
 clamp.type = 'box'
-clamp.up=vp.vec(-1, 2, 0)
+clamp.up = vp.vec(-1, 2, 0)
 clamp.w2c, clamp.c2w = get_camera_extrinsic(clamp.axis, clamp.up, clamp.pos)  # 4X4
 clamp.min, clamp.max = get_box_min_max(clamp.size)
 object_array.append(clamp)
 
-ground2 = vp.box(pos=vp.vec(2, -4, 0), size=vp.vec(20, 0.2, 6), color=vp.color.green)
+ground2 = vp.box(pos=vp.vec(2, -6, 0), size=vp.vec(20, 0.2, 6), color=vp.color.green)
 ground2.type = 'box'
 ground2.w2c, ground2.c2w = get_camera_extrinsic(ground2.axis, ground2.up, ground2.pos)  # 4X4
 ground2.min, ground2.max = get_box_min_max(ground2.size)
@@ -123,29 +125,63 @@ object_array.append(ground2)
 
 ci = []
 cj = []
-for r in range(N):
-    for c in range(N - 1):
-        ci.append(get_idx(N, r, c))
-        cj.append(get_idx(N, r, c + 1))
 
-for r in range(N - 1):
-    for c in range(N):
-        ci.append(get_idx(N, r, c))
-        cj.append(get_idx(N, r + 1, c))
+for d in range(N):
+    for r in range(N):
+        for c in range(N - 1):
+            ci.append(get_idx(N, d, r, c))
+            cj.append(get_idx(N, d, r, c + 1))
 
-for r in range(N - 1):
-    for c in range(N - 1):
-        ci.append(get_idx(N, r, c))
-        cj.append(get_idx(N, r + 1, c + 1))
+for d in range(N):
+    for r in range(N - 1):
+        for c in range(N):
+            ci.append(get_idx(N, d, r, c))
+            cj.append(get_idx(N, d, r + 1, c))
 
-for r in range(N - 1):
-    for c in range(N - 1):
-        ci.append(get_idx(N, r + 1, c))
-        cj.append(get_idx(N, r, c + 1))
+for d in range(N):
+    for r in range(N - 1):
+        for c in range(N - 1):
+            ci.append(get_idx(N, d, r, c))
+            cj.append(get_idx(N, d, r + 1, c + 1))
+for d in range(N):
+    for r in range(N - 1):
+        for c in range(N - 1):
+            ci.append(get_idx(N, d, r + 1, c))
+            cj.append(get_idx(N, d, r, c + 1))
+
+for d in range(N - 1):
+    for r in range(N):
+        for c in range(N):
+            ci.append(get_idx(N, d, r, c))
+            cj.append(get_idx(N, d + 1, r, c))
+
+for d in range(N - 1):
+    for r in range(N):
+        for c in range(N - 1):
+            ci.append(get_idx(N, d, r, c))
+            cj.append(get_idx(N, d + 1, r, c + 1))
+
+for d in range(N - 1):
+    for r in range(N):
+        for c in range(N - 1):
+            ci.append(get_idx(N, d, r, c + 1))
+            cj.append(get_idx(N, d + 1, r, c))
+
+for d in range(N - 1):
+    for r in range(N-1):
+        for c in range(N):
+            ci.append(get_idx(N, d, r, c))
+            cj.append(get_idx(N, d + 1, r+1, c))
+
+for d in range(N - 1):
+    for r in range(N-1):
+        for c in range(N):
+            ci.append(get_idx(N, d, r+1, c))
+            cj.append(get_idx(N, d + 1, r, c))
 
 edge_array = []
 for i, j in zip(ci, cj):
-    spring = vp.cylinder(pos=node_array[i].pos, axis=node_array[j].pos - node_array[i].pos, radius=0.02)
+    spring = vp.cylinder(pos=node_array[i].pos, axis=node_array[j].pos - node_array[i].pos, radius=0.01)
     spring.k = spring_coef
     edge_array.append(spring)
 
