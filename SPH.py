@@ -98,7 +98,7 @@ def main():
             1 / n) / R ** 2  # ~ 2.01
     # For lambda calculation, https://pmocz.github.io/manuscripts/pmocz_sph.pdf
 
-    pos = 2 * np.random.randn(N, 3)
+    pos = 2 * np.random.randn(N, 3)  # initial random position for each particle
     vel = np.zeros_like(pos)
     acc = cal_acc(pos, vel, h, Lambda, nu, m, k, n)
 
@@ -107,12 +107,18 @@ def main():
     i = 0
     while True:
         vp.rate(120)
+
+        # Leapfrog integration
         vel += acc * dt / 2
         pos += vel * dt
         acc = cal_acc(pos, vel, h, Lambda, nu, m, k, n)
         vel += acc * dt / 2
+
+        # update particle position for rendering
         for particle_pos, particle in zip(pos, points):
             particle.pos = vp.vec(*particle_pos)
+
+        # update particle's color representing density. High density region-> yellow, low density region -> red
         if i % color_change == 0:
             # Set color according to density
             density = cal_density(pos, pos, m, h)[:, 0]  # [N]
