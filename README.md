@@ -30,6 +30,15 @@ You can also add or remove `box` objects inside the code. Check [line 157](https
 
 ### Run `SPH.py`
 
+You can find what SPH is, and details about SPH in this paper [Smoothed Particle Hydrodynamics](https://arxiv.org/abs/1007.1245v2).
+
+And also consult [philip-mocz.medium](https://philip-mocz.medium.com/create-your-own-smoothed-particle-hydrodynamics-simulation-with-python-76e1cec505f1), which my code is heavily based on. 
+
+So what SPH is basically doing is that using smoothing-kernel we can map continuous field on to a series of discrete particles. Smoothing-kernel is the approximation to dirac-delta function and there are many differnet kinds of kernel, in this example we use Gaussian smoothing kernel.
+
+- Gaussian Smoothing Kernel
+
+
 - - -
 ## References
 https://philip-mocz.medium.com/create-your-own-spring-network-simulation-with-python-d9246e4091e5
