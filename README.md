@@ -37,9 +37,45 @@ And also consult [philip-mocz.medium](https://philip-mocz.medium.com/create-your
 So what SPH is basically doing is that using smoothing-kernel we can map continuous field on to a series of discrete particles. Smoothing-kernel is the approximation to dirac-delta function and there are many differnet kinds of kernel, in this example we use Gaussian smoothing kernel.
 
 - Gaussian Smoothing Kernel
-
+<img src="./IMAGES/kernel.png"> 
+(where `x = r/h`)
 
 - - -
+
+And the fluid equation of motion which we want to discretize is `Euler equations` with the inviscid fluid given as follow.
+
+- Euler equations of motion in the case of inviscid fluid
+<img src="./IMAGES/euler.png">
+
+- - -
+
+With the SPH formalism, density at any given point can be easily approximated by particles comprising fluid. Details can be found at [Smoothed Particle Hydrodynamics](https://arxiv.org/abs/1007.1245v2).
+
+- Density approximation using SPH
+<img src="./IMAGES/density.png">
+
+- - -
+
+For the pressure, we assume pressure is given by polytropic equation of state. [Polytrope](https://en.wikipedia.org/wiki/Polytrope)
+
+- Pressure 
+<img src="./IMAGES/polytropic.png">
+
+where `k` is constant and `n` is polytropic index. (`n`=1 for our project)
+
+- - -
+
+For the external force, we consider gravity and drag force.
+
+- External Forces
+<img src="./IMAGES/external.png">
+
+First term corresponds to gravity and second to drag force. Second term is needed to make steady state.
+
+- - -
+
+Finally, with these `pressure`, `density`, 
+
 ## References
 https://philip-mocz.medium.com/create-your-own-spring-network-simulation-with-python-d9246e4091e5
 
