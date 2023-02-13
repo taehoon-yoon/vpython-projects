@@ -25,8 +25,8 @@ You can also add or remove `box` objects inside the code. Check [line 157](https
 
 ## Simulating star with SPH(Smoothed Particle Hydrodynamics)
 
-<img src="./IMAGES/SPH_star.gif" height="400" width="400"> &nbsp; &nbsp; &nbsp;
-<img src="./IMAGES/SPH_star2.gif" height="400" width="400"> &nbsp; &nbsp; &nbsp;
+<img src="./IMAGES/SPH_star.gif" height="350" width="350"> &nbsp; &nbsp; &nbsp;
+<img src="./IMAGES/SPH_star2.gif" height="350" width="350"> &nbsp; &nbsp; &nbsp;
 
 ### Run `SPH.py`
 
