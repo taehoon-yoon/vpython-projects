@@ -11,19 +11,32 @@ def vpVec2npVec(vec):
 
 
 def cal_acc(pos, ci, cj, spring_k, spring_L0, mass_mat, gravity_acc, velocity, drag_coef):
+    """
+    Calculating acceleration on each particle(node)
+    1. hook force (spring force)
+    2. gravity
+    3. drag force
+    """
     acc = np.zeros_like(pos)
+    # 1. hook force calculation
     displacement_vec = pos[ci, :] - pos[cj, :]
     displacement_len = np.linalg.norm(displacement_vec, axis=1)
     delta_len = displacement_len - spring_L0
     hook_force = -spring_k[..., None] * delta_len[..., None] * displacement_vec / displacement_len[..., None]
     np.add.at(acc, ci, hook_force)
     np.add.at(acc, cj, -hook_force)
+    # 2. gravity
     acc[:, 1] += -gravity_acc * mass_mat
+    # 3. drag force
     acc -= drag_coef * velocity
     return acc
 
 
 def get_box_min_max(box_shape):
+    """
+    Get box
+
+    """
     min_ = np.array([-box_shape.x / 2, -box_shape.y / 2, -box_shape.z / 2])
     max_ = np.array([box_shape.x / 2, box_shape.y / 2, box_shape.z / 2])
     return min_, max_

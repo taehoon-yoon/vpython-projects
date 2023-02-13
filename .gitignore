@@ -2,3 +2,4 @@
 *.py
 !spring_network.py
 !SPH.py
+*.pdf
